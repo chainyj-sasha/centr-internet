@@ -9,6 +9,20 @@
 </head>
 <body>
 
+@if(auth()->check())
+    {{ auth()->user()->name }}
+    <a href="{{ route('users.logout') }}">Разлогин</a>
+@else
+    <form action="{{ route('users.login') }}" method="post">
+        @csrf
+        <input name="email" type="email" placeholder="Введите логин"><br>
+        <input name="password" type="password" placeholder="пароль..."><br><br>
+        <input type="submit" value="Войти">
+    </form>
+
+    <a href="{{ route('users.create') }}">Зарегистрироваться</a>
+@endif
+
 @yield('content')
 
 </body>

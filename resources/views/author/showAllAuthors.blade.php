@@ -11,9 +11,11 @@
             <li>
                 {{ $author->name }}<br>
                 <a href="{{ route('authors.show', ['author' => $author->id]) }}">Список книг</a>
-                <form action="{{ route('authors.edit', ['author' => $author->id]) }}" method="">
-                    <button>Редактировать автора</button>
-                </form><br>
+                @if(auth()->check())
+                    <form action="{{ route('authors.edit', ['author' => $author->id]) }}" method="">
+                        <button>Редактировать автора</button>
+                    </form><br>
+                @endif
             </li>
         @endforeach
     </ul>

@@ -10,12 +10,14 @@
         @foreach($author->books as $book)
             <li>
                 {{ $book->name }}
-                <a href="{{ route('books.edit', ['book' => $book->id]) }}">Редактировать</a>
-                <form action="{{ route('books.destroy', ['book' => $book->id]) }}" method="post">
-                    @csrf
-                    @method('DELETE')
-                    <input type="submit" value="Удалить">
-                </form>
+                @if(auth()->check())
+                    <a href="{{ route('books.edit', ['book' => $book->id]) }}">Редактировать</a>
+                    <form action="{{ route('books.destroy', ['book' => $book->id]) }}" method="post">
+                        @csrf
+                        @method('DELETE')
+                        <input type="submit" value="Удалить">
+                    </form>
+                @endif
             </li>
         @endforeach
     </ol>
