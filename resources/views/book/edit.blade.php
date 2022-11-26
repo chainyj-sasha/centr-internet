@@ -14,7 +14,7 @@
         <input type="submit" value="Сохранить">
     </form>
 
-    <a href="{{ route('authors.show', ['author' => $book->author->id]) }}">Назад</a>
+    <a href="{{ route('authors.show', ['author' => $book->author[0]->id]) }}">Назад</a>
 
 @endsection
 

@@ -20,7 +20,7 @@
         @endforeach
     </ol>
 
-    <form action="{{ route('book_add', ['authorId' => $author->id]) }}" method="get">
+    <form action="{{ route('books.create') }}" method="get">
         <button>Добавить книгу</button>
     </form>
 

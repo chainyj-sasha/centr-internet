@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Author;
 use App\Models\Book;
 use Illuminate\Http\Request;
 
@@ -17,23 +18,31 @@ class BookController extends Controller
         ]);
     }
 
-    public function add($authorId)
+    public function create()
     {
+        $authors = Author::all();
+
         return view('book.create', [
             'title' => 'Добавить книгу',
-            'authorId' => $authorId,
+            'authors' => $authors,
         ]);
     }
 
     public function store(Request $request)
     {
-        Book::create([
+        //dd($request->authorsId);
+
+//TODO продолжить сдесь!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        $book = Book::create([
             'name' => $request->name,
             'year' => $request->year,
-            'author_id' => $request->authorId,
         ]);
 
-        return redirect()->route('authors.show', ['author' => $request->authorId]);
+        $authors = Author::find($request->authorsId);
+        $book->author()->attach($authors);
+
+        return redirect()->route('show_all_authors');
     }
 
     public function edit($id)
@@ -60,6 +69,7 @@ class BookController extends Controller
     public function destroy($id)
     {
         $book = Book::find($id);
+        $book->author()->detach($book->author);
         $book->delete();
 
         return redirect()->back();
