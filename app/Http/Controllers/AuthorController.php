@@ -2,14 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Author;
+use App\Repositories\AuthorRepository;
 use Illuminate\Http\Request;
 
 class AuthorController extends Controller
 {
+    private $authorRepository;
+
+    public function __construct(AuthorRepository $authorRepository)
+    {
+        $this->authorRepository = $authorRepository;
+    }
+
     public function show_all_authors()
     {
-        $authors = Author::all();
+        $authors = $this->authorRepository->all();
 
         return view('author.showAllAuthors', [
             'title' => 'Список авторов',
@@ -26,16 +33,14 @@ class AuthorController extends Controller
 
     public function store(Request $request)
     {
-        Author::create([
-            'name' => $request->name,
-        ]);
+        $this->authorRepository->add($request);
 
         return redirect()->route('show_all_authors');
     }
 
     public function show($id)
     {
-        $author = Author::find($id);
+        $author = $this->authorRepository->showOne($id);
 
         return view('author.show', [
             'title' => 'Просмотр автора',
@@ -45,7 +50,7 @@ class AuthorController extends Controller
 
     public function edit($id)
     {
-        $author = Author::find($id);
+        $author = $this->authorRepository->showOne($id);
 
         return view('author.edit', [
             'title' => 'Редактирование автора',
@@ -55,10 +60,7 @@ class AuthorController extends Controller
 
     public function update(Request $request, $id)
     {
-        $author = Author::find($id);
-
-        $author->name = $request->name;
-        $author->save();
+        $this->authorRepository->update($request, $id);
 
         return redirect()->route('authors.edit', ['author' => $id]);
     }

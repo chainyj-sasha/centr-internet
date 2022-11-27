@@ -2,25 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Author;
-use App\Models\Book;
+use App\Repositories\BookRepository;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-    public function show_all_books($authorId)
-    {
-        $books = Book::where('author_id', $authorId)->get();
+    private $bookRepository;
 
-        return view('book.showAllBooks', [
-           'title' => 'Список книг',
-           'books' => $books,
-        ]);
+    public function __construct(BookRepository $bookRepository)
+    {
+        $this->bookRepository = $bookRepository;
     }
 
     public function create()
     {
-        $authors = Author::all();
+        $authors = $this->bookRepository->allAuthors();
 
         return view('book.create', [
             'title' => 'Добавить книгу',
@@ -30,24 +26,14 @@ class BookController extends Controller
 
     public function store(Request $request)
     {
-        //dd($request->authorsId);
-
-//TODO продолжить сдесь!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        $book = Book::create([
-            'name' => $request->name,
-            'year' => $request->year,
-        ]);
-
-        $authors = Author::find($request->authorsId);
-        $book->author()->attach($authors);
+        $this->bookRepository->add($request);
 
         return redirect()->route('show_all_authors');
     }
 
     public function edit($id)
     {
-        $book = Book::find($id);
+        $book = $this->bookRepository->getOne($id);
 
         return view('book.edit', [
             'title' => 'Редактирование книги',
@@ -57,20 +43,14 @@ class BookController extends Controller
 
     public function update(Request $request, $id)
     {
-        $book = Book::find($id);
-
-        $book->name = $request->name;
-        $book->year = $request->year;
-        $book->save();
+        $this->bookRepository->update($request, $id);
 
         return redirect()->route('books.edit', ['book' => $id]);
     }
 
     public function destroy($id)
     {
-        $book = Book::find($id);
-        $book->author()->detach($book->author);
-        $book->delete();
+        $this->bookRepository->delete($id);
 
         return redirect()->back();
     }

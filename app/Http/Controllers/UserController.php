@@ -4,13 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserStoreRequest;
-use App\Models\User;
-use Illuminate\Http\Request;
+use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+
 
 class UserController extends Controller
 {
+    private $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
     public function create()
     {
         return view('user.create');
@@ -18,11 +24,7 @@ class UserController extends Controller
 
     public function store(UserStoreRequest $request)
     {
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        $user = $this->userRepository->add($request);
         Auth::login($user);
 
         return redirect()->route('show_all_authors');
@@ -30,12 +32,8 @@ class UserController extends Controller
 
     public function login(UserLoginRequest $request)
     {
-        if (Auth::attempt([
-            'email' => $request->email,
-            'password' => $request->password,
-        ])){
-            return redirect()->back();
-        }
+        $this->userRepository->login($request);
+
         return redirect()->back();
     }
 
